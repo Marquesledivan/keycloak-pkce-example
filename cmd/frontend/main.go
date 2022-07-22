@@ -30,7 +30,10 @@ func main() {
 	codeVerifier, _ := cv.CreateCodeVerifier()
 	codeChallenge := codeVerifier.CodeChallengeS256()
 
+	// 1) Redireciona o Usuário para o Keycloak para fazer o login
 	http.HandleFunc("/auth", handleAuth(codeChallenge))
+
+	// 2) Recebe o Auth Code e troca por um Access Token
 	http.HandleFunc("/redirect", handleAccessToken(codeVerifier))
 
 	log.Fatal(http.ListenAndServe(":3030", nil))
