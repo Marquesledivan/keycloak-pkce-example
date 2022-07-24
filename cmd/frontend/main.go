@@ -53,7 +53,7 @@ func handleAuth(codeChallenge string) http.HandlerFunc {
 		q.Set("code_challenge", codeChallenge)                  // Required for PKCE - [HOW GENERATE CODE VERIFIER] https://datatracker.ietf.org/doc/html/rfc7636#page-8
 
 		u.RawQuery = q.Encode()
-		fmt.Println(u)
+		log.Printf("> REDIRECT TO URL: %v\n", u)
 		http.Redirect(w, r, u.String(), http.StatusSeeOther)
 	}
 }
@@ -61,6 +61,7 @@ func handleAuth(codeChallenge string) http.HandlerFunc {
 func handleCallback(codeVerifier *cv.CodeVerifier) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		code := r.URL.Query()["code"][0]
+		log.Printf("> RECEIVE ACCESS CODE %q \n", code)
 		token := getAccessToken(code, codeVerifier.String())
 
 		fmt.Println()
