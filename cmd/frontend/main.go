@@ -30,6 +30,8 @@ func main() {
 	codeVerifier, _ := cv.CreateCodeVerifier()
 	codeChallenge := codeVerifier.CodeChallengeS256()
 
+	http.HandleFunc("/home", handleHome())
+
 	// 1) Redireciona o Usuário para o Keycloak para fazer o login
 	http.HandleFunc("/auth", handleAuth(codeChallenge))
 
@@ -38,6 +40,22 @@ func main() {
 
 	log.Fatal(http.ListenAndServe(":3030", nil))
 
+}
+
+func handleHome() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		body := `
+			<html>
+				<body>
+					<h1>My APP</h1>
+					<a href="/auth">Login</a>
+				</body>
+			</html>
+		`
+
+		_, _ = w.Write([]byte(body))
+		w.Header().Add("Content-Type", "text/html")
+	}
 }
 
 func handleAuth(codeChallenge string) http.HandlerFunc {
