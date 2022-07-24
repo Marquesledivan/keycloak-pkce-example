@@ -73,7 +73,7 @@ func getAccessToken(code, codeVerifier string) *accessToken {
 	data := url.Values{}
 	data.Set("client_id", "test-client-public-spa")
 	data.Set("code_verifier", codeVerifier)
-	data.Set("redirect_uri", "http://localhost:3030/redirect")
+	data.Set("redirect_uri", "http://localhost:3030/callback")
 	data.Set("grant_type", "authorization_code")
 	data.Set("code", code)
 
