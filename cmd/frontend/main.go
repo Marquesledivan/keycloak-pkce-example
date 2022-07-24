@@ -34,7 +34,7 @@ func main() {
 	http.HandleFunc("/auth", handleAuth(codeChallenge))
 
 	// 2) Recebe o Auth Code e troca por um Access Token
-	http.HandleFunc("/redirect", handleAccessToken(codeVerifier))
+	http.HandleFunc("/callback", handleCallback(codeVerifier))
 
 	log.Fatal(http.ListenAndServe(":3030", nil))
 
@@ -46,7 +46,7 @@ func handleAuth(codeChallenge string) http.HandlerFunc {
 		q := u.Query()
 		q.Set("client_id", "test-client-public-spa")            // Required
 		q.Set("response_type", "code")                          // Required
-		q.Set("redirect_uri", "http://localhost:3030/redirect") // Optional
+		q.Set("redirect_uri", "http://localhost:3030/callback") // Optional
 		q.Set("state", "mystate")                               // Recommended
 		q.Set("scope", "openid")                                // Required
 		q.Set("code_challenge_method", "S256")                  // Required for PKCE
@@ -58,7 +58,7 @@ func handleAuth(codeChallenge string) http.HandlerFunc {
 	}
 }
 
-func handleAccessToken(codeVerifier *cv.CodeVerifier) http.HandlerFunc {
+func handleCallback(codeVerifier *cv.CodeVerifier) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		code := r.URL.Query()["code"][0]
 		token := getAccessToken(code, codeVerifier.String())
